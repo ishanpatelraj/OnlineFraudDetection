@@ -1,5 +1,4 @@
-readme_content = """
-# 🛡️ IEEE-CIS Fraud Detection Project
+# Online Fraud Detection
 
 This project aims to detect fraudulent transactions using the [IEEE-CIS Fraud Detection dataset](https://www.kaggle.com/competitions/ieee-fraud-detection). A wide range of feature engineering techniques are applied, and a LightGBM model is used for classification. The final solution focuses on effective preprocessing, deep feature synthesis, and robust model training.
 
