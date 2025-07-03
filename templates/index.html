@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fraud Detection Input</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #cccccc;
+        }
+        h2 {
+            text-align: center;
+            color: #333333;
+        }
+        label {
+            margin-top: 10px;
+            display: block;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px;
+            border: none;
+            width: 100%;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Fraud Detection - Transaction Form</h2>
+        <form method="POST" action="/predict_single">
+            <!-- Numerical Inputs -->
+            <label>TransactionID</label><input type="number" name="TransactionID" required>
+            <label>TransactionDT</label><input type="number" name="TransactionDT" required>
+            <label>TransactionAmt</label><input type="number" step="any" name="TransactionAmt" required>
+            <label>card_bin</label><input type="number" step="any" name="card_bin">
+            <label>addr2</label><input type="number" step="any" name="addr2">
+            <label>dist1</label><input type="number" step="any" name="dist1">
+            <label>dist2</label><input type="number" step="any" name="dist2">
+
+            <!-- Categorical Dropdowns -->
+            <label>ProductCD</label>
+            <select name="ProductCD">
+                <option value="H">H</option>
+                <option value="C">C</option>
+                <option value="S">S</option>
+                <option value="R">R</option>
+            </select>
+
+            <label>card_id</label><input type="text" name="card_id" required>
+
+            <label>issuer_bank_code</label><input type="text" name="issuer_bank_code" required>
+
+            <label>card_network</label>
+            <select name="card_network">
+                <option value="visa">Visa</option>
+                <option value="mastercard">Mastercard</option>
+                <option value="american express">American Express</option>
+                <option value="discover">Discover</option>
+                <option value="nan">nan</option>
+            </select>
+
+            <label>card_type</label>
+            <select name="card_type">
+                <option value="credit">Credit</option>
+                <option value="debit">Debit</option>
+                <option value="charge card">Charge Card</option>
+                <option value="nan">nan</option>
+            </select>
+
+            <label>addr1</label><input type="text" name="addr1" required>
+
+            <label>P_emaildomain</label>
+            <select name="P_emaildomain">
+                <option value="gmail.com">gmail.com</option>
+                <option value="anonymous.com">anonymous.com</option>
+                <option value="hotmail.com">hotmail.com</option>
+                <option value="aol.com">aol.com</option>
+                <option value="yahoo.com">yahoo.com</option>
+            </select>
+
+            <label>R_emaildomain</label>
+            <select name="R_emaildomain">
+                <option value="nan">nan</option>
+                <option value="gmail.com">gmail.com</option>
+                <option value="hotmail.com">hotmail.com</option>
+                <option value="outlook.com">outlook.com</option>
+                <option value="anonymous.com">anonymous.com</option>
+            </select>
+
+            <label>DeviceType</label>
+            <select name="DeviceType">
+                <option value="mobile">Mobile</option>
+                <option value="desktop">Desktop</option>
+                <option value="nan">nan</option>
+            </select>
+
+            <label>DeviceInfo</label>
+            <select name="DeviceInfo">
+                <option value="SAMSUNG SM-G892A Build/NRD90M">SAMSUNG SM-G892A</option>
+                <option value="iOS Device">iOS Device</option>
+                <option value="Windows">Windows</option>
+                <option value="MacOS">MacOS</option>
+                <option value="nan">nan</option>
+            </select>
+
+            <label>Operating_system</label>
+            <select name="Operating_system">
+                <option value="Android 7.0">Android 7.0</option>
+                <option value="iOS 11.1.2">iOS 11.1.2</option>
+                <option value="Mac OS X 10_11_6">Mac OS X 10_11_6</option>
+                <option value="Windows 10">Windows 10</option>
+                <option value="nan">nan</option>
+            </select>
+
+            <label>Browser_type</label>
+            <select name="Browser_type">
+                <option value="samsung browser 6.2">Samsung Browser 6.2</option>
+                <option value="mobile safari 11.0">Mobile Safari 11.0</option>
+                <option value="chrome 62.0">Chrome 62.0</option>
+                <option value="chrome 62.0 for android">Chrome 62.0 for Android</option>
+                <option value="nan">nan</option>
+            </select>
+
+            <input type="submit" value="Predict Fraud" class="submit-btn">
+        </form>
+
+        {% if prediction_text %}
+            <div class="result">{{ prediction_text }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>
