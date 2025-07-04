@@ -148,8 +148,28 @@ def predict_single():
             'rolling_txn_time_short_term', 'rolling_txn_time_mid_term',
             'rolling_txn_time_long_term', 'rolling_txn_time_extended'
         ]
-        for col in d_features:
-            df[col] = 0
+
+        # Label encode all string-based interaction features if they were used in training
+        interaction_fields = [
+            '_weekday_hour',
+            '_P_emaildomain__addr1',
+            '_card_id__issuer',
+            '_card_id__addr1',
+            '_issuer__addr1',
+            '_cardid_issuer__addr1'
+        ]
+
+        for col in interaction_fields:
+            if col in df.columns and col in encoders:
+                le = encoders[col]
+                df[col] = df[col].apply(lambda x: le.transform([x])[0] if x in le.classes_ else -1)
+            elif col in df.columns:
+                # fallback to category codes if no encoder (not recommended, for debug only)
+                df[col] = df[col].astype('category').cat.codes
+
+
+                for col in d_features:
+                    df[col] = 0
 
         import re
 
