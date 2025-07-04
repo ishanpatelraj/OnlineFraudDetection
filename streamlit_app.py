@@ -45,9 +45,6 @@ additional_numericals = [
     'rolling_txn_count_short_term', 'rolling_txn_count_mid_term', 'rolling_txn_count_long_term'
 ]
 
-for col in additional_numericals:
-        df[col] = 0
-
 string_fields = ['card_id', 'DeviceInfo']
 input_fields = categorical_fields + numerical_fields + string_fields
 
@@ -154,6 +151,9 @@ if st.button("🔍 Predict Fraud"):
     for col in model_columns:
         if col not in df.columns:
             df[col] = 0
+    
+    for col in additional_numericals:
+        df[col] = 0
 
     df = df[model_columns]
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
