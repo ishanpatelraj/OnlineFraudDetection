@@ -10,7 +10,7 @@ import datetime
 app = Flask(__name__)
 
 # Load model
-with open("lgb_model.pkl", "rb") as f:
+with open("model.pkl", "rb") as f:
     model = pickle.load(f)
 
 # Load label encoders
