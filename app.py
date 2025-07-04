@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # Load model
 with open("model.pkl", "rb") as f:
-    model = pickle.load(f)
+    models = pickle.load(f)
 
 # Load label encoders
 with open("label_encoders.pkl", "rb") as f:
