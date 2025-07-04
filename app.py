@@ -179,7 +179,7 @@ def predict_single():
         df.replace([np.inf, -np.inf], np.nan, inplace=True)
         df.fillna(0, inplace=True)
 
-        preds = np.mean([model.predict(X) for model in models], axis=0)
+        preds = np.mean([model.predict(df) for model in models], axis=0)
 
         pred_label = int(preds[0] > 0.5)
 
