@@ -5,6 +5,7 @@ import pickle
 import lightgbm as lgb
 import json
 import os
+import datetime
 
 app = Flask(__name__)
 
@@ -20,6 +21,9 @@ with open("label_encoders.pkl", "rb") as f:
 with open("model_columns.json", "r") as f:
     model_columns = json.load(f)
 
+with open("amount_bins.pkl", "rb") as f:
+    amount_bins = pickle.load(f)
+
 @app.route('/')
 def home():
     return render_template('index.html')  # You must create templates/index.html
@@ -27,64 +31,81 @@ def home():
 @app.route('/predict_single', methods=['POST'])
 def predict_single():
     try:
-        # Collect input values from form
-        input_fields = [
-            'TransactionAmt', 'ProductCD', 'card_id', 'issuer_bank_code', 'card_network',
-            'card_bin', 'card_type', 'addr1', 'addr2', 'dist1', 'dist2',
-            'P_emaildomain', 'R_emaildomain', 'recent_txn_count', 'card_usage_frequency',
-            'shared_device_count', 'billing_address_usage', 'shipping_address_usage',
-            'device_browser_combo_count', 'transaction_type_count', 'device_usage_frequency',
-            'inactive_device_count', 'merchant_category_count', 'location_terminal_count',
-            'rolling_txn_count_short_term', 'rolling_txn_count_mid_term', 'rolling_txn_count_long_term',
-            'days_since_prev_txn', 'days_since_first_txn', 'device_session_txn_gap',
-            'txn_gap_same_card', 'txn_gap_same_billing_addr', 'days_since_last_login',
-            'days_since_last_device_use', 'txn_gap_same_state', 'address_reuse_duration',
-            'billing_shipping_time_diff', 'days_since_card_registration',
-            'rolling_txn_time_short_term', 'rolling_txn_time_mid_term',
-            'rolling_txn_time_long_term', 'rolling_txn_time_extended',
-            '_seq_day', '_seq_week', '_weekday', '_hour', '_weekday_hour',
-            '_amount_qcut10', 'Operating_system', 'Browser_type', 'DeviceType',
-            'DeviceInfo', '_hour_density', '_amount_decimal', '_amount_decimal_len',
-            '_amount_fraction', 'P_emaildomain_1', 'P_emaildomain_2', 'P_emaildomain_3',
-            'R_emaildomain_1', 'R_emaildomain_2', 'R_emaildomain_3',
-            '_hour_bucket_evening', '_hour_bucket_morning', '_hour_bucket_night',
-            '_is_weekend_1'
+        # Define fields based on image
+        categorical_fields = [
+            'ProductCD', 'card_network', 'card_type',
+            'P_emaildomain', 'R_emaildomain',
+            'DeviceType', 'Operating_system', 'Browser_type'
         ]
-        
+
+        numerical_fields = [
+            'TransactionID', 'TransactionDT', 'TransactionAmt',
+            'issuer_bank_code', 'card_bin',
+            'addr1', 'addr2', 'dist1', 'dist2'
+        ]
+
+        string_fields = ['card_id', 'DeviceInfo']  # Treat as free-form strings
+
+        input_fields = categorical_fields + numerical_fields + string_fields
+
+        # Parse form data
         input_data = {}
         for field in input_fields:
             val = request.form.get(field, '0')
-            try:
-                input_data[field] = float(val)
-            except:
-                input_data[field] = val
+            if field in numerical_fields:
+                try:
+                    input_data[field] = float(val)
+                except ValueError:
+                    input_data[field] = 0.0
+            else:
+                input_data[field] = str(val)
 
+        # Create DataFrame
         df = pd.DataFrame([input_data])
 
-        # Cross features
         df['_P_emaildomain__addr1'] = df['P_emaildomain'].astype(str) + '__' + df['addr1'].astype(str)
         df['_card_id__issuer'] = df['card_id'].astype(str) + '__' + df['issuer_bank_code'].astype(str)
         df['_card_id__addr1'] = df['card_id'].astype(str) + '__' + df['addr1'].astype(str)
         df['_issuer__addr1'] = df['issuer_bank_code'].astype(str) + '__' + df['addr1'].astype(str)
         df['_cardid_issuer__addr1'] = df['_card_id__issuer'] + '__' + df['addr1'].astype(str)
 
-        # Label encoding
-        for col in label_encode_cols:
+        startDate = datetime.datetime.strptime('2024-09-08', "%Y-%m-%d")
+        df['Date'] = df['TransactionDT'].apply(lambda x: startDate + datetime.timedelta(seconds=x))
+
+        # 🌟 Extract date-based features
+        df['ymd'] = df['Date'].dt.year.astype(str) + '-' + df['Date'].dt.month.astype(str) + '-' + df['Date'].dt.day.astype(str)
+        df['year_month'] = df['Date'].dt.year.astype(str) + '-' + df['Date'].dt.month.astype(str)
+        df['weekday'] = df['Date'].dt.dayofweek
+        df['hour'] = df['Date'].dt.hour
+        df['day'] = df['Date'].dt.day
+        df['_seq_day'] = df['TransactionDT'] // (24 * 60 * 60)
+        df['_seq_week'] = df['_seq_day'] // 7
+        df['_weekday_hour'] = df['weekday'].astype(str) + '_' + df['hour'].astype(str)
+        df['_amount_qcut10'] = pd.cut(df['TransactionAmt'], bins=amount_bins, include_lowest=True)
+
+        # Drop Date if not in model
+        df.drop(columns=['Date'], inplace=True)
+
+        # Label encoding for categorical fields
+        for col in categorical_fields + string_fields:
             if col in df.columns and col in encoders:
                 le = encoders[col]
-                df[col] = df[col].astype(str).apply(lambda x: le.transform([x])[0] if x in le.classes_ else -1)
+                df[col] = df[col].apply(lambda x: le.transform([x])[0] if x in le.classes_ else -1)
 
+        # Add any missing columns required by model
         for col in model_columns:
             if col not in df.columns:
                 df[col] = 0
         df = df[model_columns]
 
+        # Final cleanup
         df.replace([np.inf, -np.inf], np.nan, inplace=True)
         df.fillna(0, inplace=True)
 
         pred = model.predict_proba(df)[:, 1][0]
 
         return render_template("index.html", prediction_text=f"Fraud Probability: {pred:.4f}")
+    
     except Exception as e:
         return jsonify({'error': str(e)})
       
