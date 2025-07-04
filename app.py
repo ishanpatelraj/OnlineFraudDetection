@@ -179,9 +179,11 @@ def predict_single():
         df.replace([np.inf, -np.inf], np.nan, inplace=True)
         df.fillna(0, inplace=True)
 
-        pred = model.predict_proba(df)[:, 1][0]
+        preds = np.mean([model.predict(X) for model in models], axis=0)
 
-        return render_template("index.html", prediction_text=f"Fraud Probability: {pred:.4f}")
+        pred_label = int(preds[0] > 0.5)
+
+        return render_template("index.html", prediction_text=f"Fraud Prediction: {'FRAUD' if pred_label == 1 else 'LEGIT'} (prob={preds[0]:.4f})")
     
     except Exception as e:
         return jsonify({'error': str(e)})
