@@ -32,7 +32,7 @@ categorical_fields = [
 ]
 
 numerical_fields = [
-    'TransactionID', 'TransactionDT', 'TransactionAmt',
+    'TransactionID', 'TransactionAmt',
     'issuer_bank_code', 'card_bin',
     'addr1', 'addr2', 'dist1', 'dist2'
 ]
@@ -57,6 +57,21 @@ for field in numerical_fields:
     data[field] = st.number_input(field, value=0.0)
 for field in string_fields:
     data[field] = st.text_input(field, "NA")
+
+input_date = st.date_input("Transaction Date", value=datetime.date(2024, 9, 8))
+input_time = st.time_input("Transaction Time", value=datetime.time(0, 0))
+
+# Combine date and time
+input_datetime = datetime.datetime.combine(input_date, input_time)
+
+# Reference date (should be same as used during training)
+start_datetime = datetime.datetime.strptime('2024-09-08', "%Y-%m-%d")
+
+# Calculate TransactionDT = seconds since reference date
+transaction_dt = int((input_datetime - start_datetime).total_seconds())
+
+data['TransactionDT'] = transaction_dt
+
 
 if st.button("🔍 Predict Fraud"):
     df = pd.DataFrame([data])
