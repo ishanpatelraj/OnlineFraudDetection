@@ -57,6 +57,7 @@ jupyterlab_git==0.51.1
 jupyterlab_pygments==0.3.0
 jupyterlab_server==2.27.3
 kiwisolver==1.4.8
+lightgbm==4.6.0
 MarkupSafe==3.0.2
 matplotlib==3.10.3
 matplotlib-inline==0.1.7
@@ -118,6 +119,7 @@ terminado==0.18.1
 threadpoolctl==3.6.0
 tinycss2==1.4.0
 toml==0.10.2
+torch==2.7.0+cpu
 tornado==6.5.1
 traitlets==5.14.3
 types-python-dateutil==2.9.0.20250516
