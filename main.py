@@ -47,8 +47,8 @@ categorical_fields = [
 
 numerical_fields = [
     'TransactionID', 'TransactionAmt',
-    'issuer_bank_code', 'card_bin',
-    'addr1', 'addr2', 'dist1', 'dist2'
+    # 'issuer_bank_code', 'card_bin',
+    # 'addr1', 'addr2', 'dist1', 'dist2'
 ]
 
 additional_numericals = [
