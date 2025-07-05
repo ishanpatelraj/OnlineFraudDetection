@@ -60,7 +60,7 @@ additional_numericals = [
 ]
 
 #string_fields = ['card_id', 'DeviceInfo']
-input_fields = categorical_fields + numerical_fields + string_fields
+input_fields = categorical_fields + numerical_fields
 
 dropdown_options = {
     "ProductCD": ['H', 'C', 'S', 'R'],
