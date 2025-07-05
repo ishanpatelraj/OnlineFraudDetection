@@ -26,10 +26,24 @@ st.markdown("Fill in the transaction details to get a fraud prediction.")
 
 # Fields
 categorical_fields = [
-    'ProductCD', 'card_network', 'card_type',
-    'P_emaildomain', 'R_emaildomain',
-    'DeviceType', 'Operating_system', 'Browser_type'
+    'ProductCD',
+    'card_network',
+    'issuer_bank_code',
+    'card_type',
+    'card_id',
+    'card_bin',
+    'addr1',
+    'addr2',
+    'dist1',
+    'dist2'
+    'P_emaildomain',
+    'R_emaildomain',
+    'Operating_system',
+    'Browser_type',
+    'DeviceType',
+    'DeviceInfo'
 ]
+
 
 numerical_fields = [
     'TransactionID', 'TransactionAmt',
@@ -48,11 +62,31 @@ additional_numericals = [
 string_fields = ['card_id', 'DeviceInfo']
 input_fields = categorical_fields + numerical_fields + string_fields
 
+dropdown_options = {
+    "ProductCD": ['H', 'C', 'S', 'R'],
+    "card_network": ['mastercard', 'visa', 'american express', 'discover', 'nan'],
+    "issuer_bank_code": [514.0, 100.0, 352.0, 375.0, 555.0],
+    "card_type": ['credit', 'debit', 'charge card', 'nan'],
+    "card_id": [4497, 2803, 16496, 4461, 1790],
+    "card_bin": [102, 226, 134, 224, 219, np.nan],
+    "addr1": [420, 337, 170, 204, np.nan],
+    "addr2": [87, 96, 35, 60, np.nan],
+    "P_emaildomain": ['gmail.com', 'anonymous.com', 'hotmail.com', 'aol.com', 'yahoo.com', 'nan'],
+    "R_emaildomain": ['gmail.com', 'hotmail.com', 'outlook.com', 'anonymous.com', 'nan'],
+    "Operating_system": ['Android 7.0', 'iOS 11.1.2', 'Mac OS X 10_11_6', 'Windows 10', 'nan'],
+    "Browser_type": ['samsung browser 6.2', 'mobile safari 11.0', 'chrome 62.0', 'chrome 62.0 for android', 'nan'],
+    "DeviceType": ['mobile', 'desktop', 'nan'],
+    "DeviceInfo": ['SAMSUNG SM-G892A Build/NRD90M', 'iOS Device', 'Windows', 'MacOS', 'nan']
+}
+
 # Collect user input
 data = {}
 st.header("Transaction Input")
 for field in categorical_fields:
-    data[field] = st.text_input(field, "nan")
+    options = dropdown_options.get(field, ['nan'])
+    selected = st.selectbox(f"{field}", options)
+    data[field] = selected if selected != 'nan' else np.nan
+
 for field in numerical_fields:
     data[field] = st.number_input(field, value=0.0)
 for field in string_fields:
