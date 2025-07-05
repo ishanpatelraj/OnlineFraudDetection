@@ -35,7 +35,7 @@ categorical_fields = [
     'addr1',
     'addr2',
     'dist1',
-    'dist2'
+    'dist2',
     'P_emaildomain',
     'R_emaildomain',
     'Operating_system',
@@ -71,6 +71,8 @@ dropdown_options = {
     "card_bin": [102, 226, 134, 224, 219, np.nan],
     "addr1": [420, 337, 170, 204, np.nan],
     "addr2": [87, 96, 35, 60, np.nan],
+    "dist1": [np.nan],
+    "dist2": [30.0,  98.0, 149.0,  84.0, np.nan],
     "P_emaildomain": ['gmail.com', 'anonymous.com', 'hotmail.com', 'aol.com', 'yahoo.com', 'nan'],
     "R_emaildomain": ['gmail.com', 'hotmail.com', 'outlook.com', 'anonymous.com', 'nan'],
     "Operating_system": ['Android 7.0', 'iOS 11.1.2', 'Mac OS X 10_11_6', 'Windows 10', 'nan'],
