@@ -195,7 +195,7 @@ if st.button("🔍 Predict Fraud"):
         lambda x: float('0.' + re.sub(r'^[0-9]|\\.|0+$', '', str(x))) if '.' in str(x) and re.search(r'\\d', str(x).split('.')[-1]) else 0.0
     )
 
-    for col in categorical_fields + string_fields:
+    for col in categorical_fields:
         if col in df.columns and col in encoders:
             df[col] = df[col].apply(lambda x: encoders[col].transform([x])[0] if x in encoders[col].classes_ else -1)
 
