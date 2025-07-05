@@ -59,7 +59,7 @@ additional_numericals = [
     'rolling_txn_count_short_term', 'rolling_txn_count_mid_term', 'rolling_txn_count_long_term'
 ]
 
-string_fields = ['card_id', 'DeviceInfo']
+#string_fields = ['card_id', 'DeviceInfo']
 input_fields = categorical_fields + numerical_fields + string_fields
 
 dropdown_options = {
@@ -67,7 +67,7 @@ dropdown_options = {
     "card_network": ['mastercard', 'visa', 'american express', 'discover', 'nan'],
     "issuer_bank_code": [514.0, 100.0, 352.0, 375.0, 555.0],
     "card_type": ['credit', 'debit', 'charge card', 'nan'],
-    "card_id": [4497, 2803, 16496, 4461, 1790],
+    "card_id": [4497, 2803, 16496, 4461, 1790, np.nan],
     "card_bin": [102, 226, 134, 224, 219, np.nan],
     "addr1": [420, 337, 170, 204, np.nan],
     "addr2": [87, 96, 35, 60, np.nan],
@@ -91,8 +91,8 @@ for field in categorical_fields:
 
 for field in numerical_fields:
     data[field] = st.number_input(field, value=0.0)
-for field in string_fields:
-    data[field] = st.text_input(field, "NA")
+# for field in string_fields:
+#     data[field] = st.text_input(field, "NA")
 
 input_date = st.date_input("Transaction Date", value=datetime.date(2024, 9, 8))
 input_time = st.time_input("Transaction Time", value=datetime.time(0, 0))
