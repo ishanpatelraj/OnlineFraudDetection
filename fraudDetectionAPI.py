@@ -138,3 +138,7 @@ async def predict_transaction(payload: TransactionInput):
 
     preds = np.mean([model.predict(df) for model in models], axis=0)
     return {"fraud_prediction": int(preds[0] > 0.5), "fraud_probability": float(preds[0])}
+
+@app.get("/")
+def root():
+    return {"message": "Welcome to the Fraud Detection API! Use POST /predict with JSON input."}
